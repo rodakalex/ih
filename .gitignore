@@ -1,0 +1,35 @@
+# Виртуальное окружение
+venv/
+ENV/
+env/
+
+# Кеши Python
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Файлы из IDE
+.idea/
+.vscode/
+*.swp
+
+# Логи и временные файлы
+*.log
+*.tmp
+*.bak
+
+# Файлы ОС
+.DS_Store
+Thumbs.db
+
+# Файлы тестов и отладочных запусков
+*.coverage
+.cache/
+.pytest_cache/
+
+# Файлы данных, которые не должны попадать в репозиторий
+*.sqlite3
+*.db
+
+# Личное / локальное
+config.py
