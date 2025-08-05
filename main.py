@@ -1,17 +1,28 @@
 # main.py
+import asyncio
+import logging
 from aiogram import Bot, Dispatcher
 from aiogram.fsm.storage.memory import MemoryStorage
 from config import BOT_TOKEN
-from handlers import start, questions, menu
+from handlers import admin, start, questions, menu
 
-bot = Bot(BOT_TOKEN)
-dp = Dispatcher(storage=MemoryStorage())
+logging.basicConfig(level=logging.INFO)
 
-dp.include_routers(
-    start.router,
-    questions.router,
-    menu.router,
-)
+async def main():
+    if not BOT_TOKEN:
+        raise ValueError("BOT_TOKEN is missing")
+
+    bot = Bot(BOT_TOKEN)
+    dp = Dispatcher(storage=MemoryStorage())
+
+    dp.include_routers(
+        start.router,
+        questions.router,
+        menu.router,
+        admin.router,
+    )
+
+    await dp.start_polling(bot)
 
 if __name__ == '__main__':
-    dp.run_polling(bot)
+    asyncio.run(main())
