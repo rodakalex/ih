@@ -1,8 +1,4 @@
 # utils.py
-import json
-import os
-from random import choice
-
 QUESTIONS_FOLDER = "questions"
 
 PROFESSION_FILES = {
@@ -31,6 +27,10 @@ PROFESSION_FILES = {
 # utils.py
 from sqlalchemy import select, func
 from db import SessionLocal, Question
+
+def get_question_by_id(question_id: int):
+    with SessionLocal() as db:
+        return db.get(Question, question_id)
 
 def load_questions_for_profession(profession: str) -> list[dict]:
     with SessionLocal() as db:

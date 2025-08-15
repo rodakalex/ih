@@ -1,17 +1,4 @@
 
-File: ./keyboards.py
-  def get_profession_keyboard()
-    calls → InlineKeyboardBuilder
-    calls → builder.adjust
-    calls → builder.as_markup
-    calls → builder.button
-  def get_idk_keyboard()
-    calls → types.KeyboardButton
-    calls → types.ReplyKeyboardMarkup
-  def get_answer_keyboard()
-    calls → types.KeyboardButton
-    calls → types.ReplyKeyboardMarkup
-
 File: ./safe_send.py
   def _wrap_method()
     calls → getattr
@@ -29,6 +16,30 @@ File: ./safe_send.py
     calls → getattr
     calls → logging.getLogger
     calls → name.startswith
+
+File: ./main.py
+
+File: ./print_table.py
+
+File: ./db.py
+  class Question
+  def init_db()
+    calls → Base.metadata.create_all
+
+File: ./keyboards.py
+  def get_profession_keyboard()
+    calls → InlineKeyboardBuilder
+    calls → builder.adjust
+    calls → builder.as_markup
+    calls → builder.button
+  def get_idk_keyboard()
+    calls → types.KeyboardButton
+    calls → types.ReplyKeyboardMarkup
+  def get_answer_keyboard()
+    calls → types.KeyboardButton
+    calls → types.ReplyKeyboardMarkup
+
+File: ./config.py
 
 File: ./ast_map.py
   class FunctionCallVisitor
@@ -57,38 +68,106 @@ File: ./ast_map.py
     calls → os.path.join
     calls → os.walk
 
-File: ./config.py
-
-File: ./main.py
+File: ./utils.py
+  def load_questions_for_profession()
+    calls → SessionLocal
+    calls → db.execute
+    calls → db.execute(select(Question).where(Question.profession == profession)).scalars
+    calls → db.execute(select(Question).where(Question.profession == profession)).scalars().all
+    calls → select
+    calls → select(Question).where
+  def get_random_question()
+    calls → SessionLocal
+    calls → db.execute
+    calls → db.execute(select(Question).where(Question.profession == profession).order_by(func.random()).limit(1)).scalar_one_or_none
+    calls → func.random
+    calls → select
+    calls → select(Question).where
+    calls → select(Question).where(Question.profession == profession).order_by
+    calls → select(Question).where(Question.profession == profession).order_by(func.random()).limit
+  def get_gpt_answer_from_question_text()
+    calls → SessionLocal
+    calls → db.execute
+    calls → db.execute(select(Question).where(Question.profession == profession, Question.question == question_text)).scalar_one_or_none
+    calls → select
+    calls → select(Question).where
 
 File: ./config.example.py
 
-File: ./utils.py
-  def load_questions_for_profession()
-    calls → PROFESSION_FILES.get
-    calls → ValueError
-    calls → json.load
-    calls → open
-    calls → os.path.join
+File: ./question_editor/app.py
+  class Question
+    def to_api_dict()
+      calls → self.answer_text.strip
+  def index()
+    calls → app.route
+    calls → render_template
+  def index_q()
+    calls → app.route
+    calls → render_template
+  def get_questions()
+    calls → Question.id.asc
+    calls → Question.query.order_by
+    calls → Question.query.order_by(Question.id.asc()).all
+    calls → app.route
+    calls → jsonify
+    calls → q.to_api_dict
+  def get_question()
+    calls → Question.query.get
+    calls → abort
+    calls → app.route
+    calls → jsonify
+    calls → q.to_api_dict
+  def update_question()
+    calls → Question.query.get
+    calls → app.route
+    calls → db.session.commit
+    calls → int
+    calls → request.form['answer'].strip
+    calls → request.form['question'].strip
+  def delete_question()
+    calls → Question.query.get
+    calls → app.route
+    calls → db.session.commit
+    calls → db.session.delete
+    calls → int
+
+File: ./scripts/migrate_json_to_sqlite.py
+  def guess_profession()
+    calls → stem.replace
+    calls → stem.replace('_', ' ').title
+  def norm()
+    calls → s or ''.strip
+  def main()
+    calls → QUESTIONS_FOLDER.exists
+    calls → QUESTIONS_FOLDER.glob
+    calls → SessionLocal
+    calls → SystemExit
+    calls → db.commit
+    calls → db.execute
+    calls → guess_profession
+    calls → init_db
+    calls → isinstance
+    calls → json.loads
+    calls → norm
+    calls → path.read_text
     calls → print
-  def get_random_question()
-    calls → choice
-    calls → load_questions_for_profession
-  def format_question()
-  def get_gpt_answer_from_question_text()
-    calls → load_questions_for_profession
-    calls → q.get
+    calls → rec.get
+    calls → seen_in_file.add
+    calls → set
+    calls → sqlite_insert
+    calls → sqlite_insert(Question).values
+    calls → sqlite_insert(Question).values(profession=profession, question=q_text, answer_text=norm(rec.get('answer')), answer_html=rec.get('answer_html')).on_conflict_do_nothing
 
-File: ./handlers/start.py
-
-File: ./handlers/questions.py
+File: ./handlers/__init__.py
 
 File: ./handlers/menu.py
 
 File: ./handlers/admin.py
   class AdminState
 
-File: ./handlers/__init__.py
+File: ./handlers/start.py
+
+File: ./handlers/questions.py
 
 File: ./questions/cleanup_questions.py
   def clean_questions()
@@ -101,71 +180,50 @@ File: ./questions/cleanup_questions.py
     calls → open
     calls → print
 
-File: ./question_editor/app.py
-  def load_questions()
-    calls → json.load
-    calls → open
-  def save_questions()
-    calls → json.dump
-    calls → open
-  def index()
-    calls → app.route
-    calls → render_template
-  def get_questions()
-    calls → app.route
-    calls → jsonify
-    calls → load_questions
-  def update_question()
-    calls → app.route
-    calls → int
-    calls → len
-    calls → load_questions
-    calls → request.form['answer'].strip
-    calls → request.form['question'].strip
-    calls → save_questions
-  def delete_question()
-    calls → app.route
-    calls → int
-    calls → len
-    calls → load_questions
-    calls → save_questions
-
-File: handlers/start.py
-
-File: handlers/questions.py
+File: handlers/__init__.py
 
 File: handlers/menu.py
 
 File: handlers/admin.py
   class AdminState
 
-File: handlers/__init__.py
+File: handlers/start.py
+
+File: handlers/questions.py
 
 File: question_editor/app.py
-  def load_questions()
-    calls → json.load
-    calls → open
-  def save_questions()
-    calls → json.dump
-    calls → open
+  class Question
+    def to_api_dict()
+      calls → self.answer_text.strip
   def index()
     calls → app.route
     calls → render_template
+  def index_q()
+    calls → app.route
+    calls → render_template
   def get_questions()
+    calls → Question.id.asc
+    calls → Question.query.order_by
+    calls → Question.query.order_by(Question.id.asc()).all
     calls → app.route
     calls → jsonify
-    calls → load_questions
-  def update_question()
+    calls → q.to_api_dict
+  def get_question()
+    calls → Question.query.get
+    calls → abort
     calls → app.route
+    calls → jsonify
+    calls → q.to_api_dict
+  def update_question()
+    calls → Question.query.get
+    calls → app.route
+    calls → db.session.commit
     calls → int
-    calls → len
-    calls → load_questions
     calls → request.form['answer'].strip
     calls → request.form['question'].strip
-    calls → save_questions
   def delete_question()
+    calls → Question.query.get
     calls → app.route
+    calls → db.session.commit
+    calls → db.session.delete
     calls → int
-    calls → len
-    calls → load_questions
-    calls → save_questions

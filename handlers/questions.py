@@ -62,7 +62,7 @@ async def handle_idk_button(message: types.Message, state: FSMContext):
         )
         logger.info(f"[IDK] Message sent successfully.")
     except Exception as e:
-        logger.exception(f"[IDK] message: {raw_text}")
+        logger.exception(f"[IDK] message: {answer}")
         logger.exception(f"[IDK] Failed to send message: {e}")
 
 

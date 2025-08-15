@@ -1,0 +1,4 @@
+.CodeMirror {
+  min-height: 550px;  /* увеличиваем редактор */
+  font-size: 14px;
+}
