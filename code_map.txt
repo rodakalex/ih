@@ -1,0 +1,171 @@
+
+File: ./keyboards.py
+  def get_profession_keyboard()
+    calls → InlineKeyboardBuilder
+    calls → builder.adjust
+    calls → builder.as_markup
+    calls → builder.button
+  def get_idk_keyboard()
+    calls → types.KeyboardButton
+    calls → types.ReplyKeyboardMarkup
+  def get_answer_keyboard()
+    calls → types.KeyboardButton
+    calls → types.ReplyKeyboardMarkup
+
+File: ./safe_send.py
+  def _wrap_method()
+    calls → getattr
+    calls → hasattr
+    calls → isinstance
+    calls → logger.warning
+    calls → original
+    calls → setattr
+    calls → str
+    calls → wraps
+  def patch_aiogram_senders()
+    calls → _wrap_method
+    calls → callable
+    calls → dir
+    calls → getattr
+    calls → logging.getLogger
+    calls → name.startswith
+
+File: ./ast_map.py
+  class FunctionCallVisitor
+    def __init__()
+      calls → set
+    def visit_Call()
+      calls → ast.unparse
+      calls → isinstance
+      calls → self.calls.add
+      calls → self.generic_visit
+  def analyze_function()
+    calls → FunctionCallVisitor
+    calls → visitor.visit
+  def analyze_file()
+    calls → analyze_function
+    calls → ast.parse
+    calls → f.read
+    calls → isinstance
+    calls → open
+    calls → output.append
+    calls → sorted
+  def walk_project()
+    calls → all_output.extend
+    calls → analyze_file
+    calls → f.endswith
+    calls → os.path.join
+    calls → os.walk
+
+File: ./config.py
+
+File: ./main.py
+
+File: ./config.example.py
+
+File: ./utils.py
+  def load_questions_for_profession()
+    calls → PROFESSION_FILES.get
+    calls → ValueError
+    calls → json.load
+    calls → open
+    calls → os.path.join
+    calls → print
+  def get_random_question()
+    calls → choice
+    calls → load_questions_for_profession
+  def format_question()
+  def get_gpt_answer_from_question_text()
+    calls → load_questions_for_profession
+    calls → q.get
+
+File: ./handlers/start.py
+
+File: ./handlers/questions.py
+
+File: ./handlers/menu.py
+
+File: ./handlers/admin.py
+  class AdminState
+
+File: ./handlers/__init__.py
+
+File: ./questions/cleanup_questions.py
+  def clean_questions()
+    calls → cleaned.append
+    calls → item.get
+    calls → item.get('question', '').strip
+    calls → json.dump
+    calls → json.load
+    calls → len
+    calls → open
+    calls → print
+
+File: ./question_editor/app.py
+  def load_questions()
+    calls → json.load
+    calls → open
+  def save_questions()
+    calls → json.dump
+    calls → open
+  def index()
+    calls → app.route
+    calls → render_template
+  def get_questions()
+    calls → app.route
+    calls → jsonify
+    calls → load_questions
+  def update_question()
+    calls → app.route
+    calls → int
+    calls → len
+    calls → load_questions
+    calls → request.form['answer'].strip
+    calls → request.form['question'].strip
+    calls → save_questions
+  def delete_question()
+    calls → app.route
+    calls → int
+    calls → len
+    calls → load_questions
+    calls → save_questions
+
+File: handlers/start.py
+
+File: handlers/questions.py
+
+File: handlers/menu.py
+
+File: handlers/admin.py
+  class AdminState
+
+File: handlers/__init__.py
+
+File: question_editor/app.py
+  def load_questions()
+    calls → json.load
+    calls → open
+  def save_questions()
+    calls → json.dump
+    calls → open
+  def index()
+    calls → app.route
+    calls → render_template
+  def get_questions()
+    calls → app.route
+    calls → jsonify
+    calls → load_questions
+  def update_question()
+    calls → app.route
+    calls → int
+    calls → len
+    calls → load_questions
+    calls → request.form['answer'].strip
+    calls → request.form['question'].strip
+    calls → save_questions
+  def delete_question()
+    calls → app.route
+    calls → int
+    calls → len
+    calls → load_questions
+    calls → save_questions

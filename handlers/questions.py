@@ -3,7 +3,6 @@ from aiogram import Router, types, F
 from aiogram.fsm.context import FSMContext
 from utils import (
     get_random_question,
-    format_question,
     get_gpt_answer_from_question_text,
 )
 from keyboards import get_idk_keyboard, get_answer_keyboard, get_profession_keyboard
@@ -24,11 +23,10 @@ async def handle_profession_choice(callback: types.CallbackQuery, state: FSMCont
         last_question=question['question']
     )
 
-    question_text = format_question(profession, question)
     await callback.message.answer(
-        question_text,
+        question["question"],
         reply_markup=get_idk_keyboard(),
-        parse_mode="Markdown"
+        parse_mode="HTML"
     )
 
     await callback.answer()
@@ -46,7 +44,7 @@ async def handle_idk_button(message: types.Message, state: FSMContext):
         await message.answer(
             "⚠️ Не найден текущий вопрос. Попробуй начать с выбора профессии",
             reply_markup=get_profession_keyboard(),
-            parse_mode="Markdown"
+            parse_mode="HTML"
         )
         return
 
@@ -56,12 +54,11 @@ async def handle_idk_button(message: types.Message, state: FSMContext):
     else:
         logger.debug(f"[IDK] Answer found: {answer[:80]}...")
 
-    raw_text = f"🧠 GPT отвечает:\n\n{answer}"
     try:
         await message.answer(
-            raw_text,
+            answer,
             reply_markup=get_answer_keyboard(),
-            parse_mode="Markdown"
+            parse_mode="HTML"
         )
         logger.info(f"[IDK] Message sent successfully.")
     except Exception as e:
@@ -78,7 +75,7 @@ async def handle_next_question(message: types.Message, state: FSMContext):
         await message.answer(
             "⚠️ Вы ещё не выбрали профессию. Пожалуйста, вернитесь в главное меню.",
             reply_markup=get_profession_keyboard(),
-            parse_mode="Markdown"
+            parse_mode="HTML"
         )
         return
 
@@ -86,11 +83,10 @@ async def handle_next_question(message: types.Message, state: FSMContext):
 
     await state.update_data(last_question=question['question'])
 
-    question_text = format_question(profession, question)
     await message.answer(
-        question_text,
+        question,
         reply_markup=get_idk_keyboard(),
-        parse_mode="Markdown"
+        parse_mode="HTML"
     )
 
 
@@ -98,5 +94,5 @@ async def handle_next_question(message: types.Message, state: FSMContext):
 async def handle_more(message: types.Message):
     await message.answer(
         "🔍 Мокнутый подробный ответ от GPT",
-        parse_mode="Markdown"
+        parse_mode="HTML"
     )

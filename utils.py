@@ -2,36 +2,73 @@
 import json
 import os
 from random import choice
-from config import QUESTIONS_FOLDER, PROFESSION_FILES
+
+QUESTIONS_FOLDER = "questions"
+
+PROFESSION_FILES = {
+    "1C Developer": "1c_developer.json",
+    "Android Developer": "android.json",
+    "Business Analyst": "business_analyst.json",
+    "C/C++ Developer": "cpp.json",
+    "C# Developer": "csharp.json",
+    "Data Scientist": "datascience.json",
+    "DevOps": "devops.json",
+    "Flutter Developer": "flutter.json",
+    "Frontend Developer": "frontend.json",
+    "Golang Developer": "golang.json",
+    "iOS Developer": "ios.json",
+    "Java Developer": "java.json",
+    "Machine Learning Engineer": "ml.json",
+    "Node.js Developer": "nodejs.json",
+    "PHP Developer": "php.json",
+    "Product Manager": "product_manager.json",
+    "Project Manager": "project_manager.json",
+    "Python Developer": "python.json",
+    "QA Engineer": "qa.json",
+    "Ruby Developer": "ruby.json",
+}
+
+# utils.py
+from sqlalchemy import select, func
+from db import SessionLocal, Question
 
 def load_questions_for_profession(profession: str) -> list[dict]:
-    filename = PROFESSION_FILES.get(profession)
-    if not filename:
-        print(f"[!] Нет файла вопросов для профессии: {profession}")
-        return [{"question": f"Пока нет вопросов для профессии {profession}.", "answer": ""}]
-    
-    path = os.path.join(QUESTIONS_FOLDER, filename)
-    try:
-        with open(path, 'r', encoding='utf-8') as f:
-            data = json.load(f)
-            if not data:
-                raise ValueError("Файл пуст")
-            return data
-    except Exception as e:
-        print(f"[!] Ошибка при загрузке {filename}: {e}")
-        return [{"question": f"Ошибка при загрузке вопросов для {profession}.", "answer": ""}]
+    with SessionLocal() as db:
+        rows = db.execute(
+            select(Question).where(Question.profession == profession)
+        ).scalars().all()
+
+    if not rows:
+        return [{"question": f"Пока нет вопросов для профессии {profession}.", "answer_html": None, "answer_text": None}]
+
+    return [
+        {"question": r.question, "answer_html": r.answer_html, "answer_text": r.answer_text}
+        for r in rows
+    ]
 
 def get_random_question(profession: str) -> dict:
-    questions = load_questions_for_profession(profession)
-    return choice(questions)
+    with SessionLocal() as db:
+        row = db.execute(
+            select(Question)
+            .where(Question.profession == profession)
+            .order_by(func.random())
+            .limit(1)
+        ).scalar_one_or_none()
 
-def format_question(profession: str, question_obj: dict) -> str:
-    return f"Вопрос для {profession}:\n{question_obj['question']}"
+    if not row:
+        return {"question": f"Пока нет вопросов для профессии {profession}.", "answer_html": None, "answer_text": None}
+
+    return {"question": row.question, "answer_html": row.answer_html, "answer_text": row.answer_text}
 
 def get_gpt_answer_from_question_text(profession: str, question_text: str) -> str:
-    questions = load_questions_for_profession(profession)
-    for q in questions:
-        if q["question"] == question_text:
-            return q.get("answer") or "❌ К сожалению, подробный ответ отсутствует."
-    return "❌ Не удалось найти ответ на этот вопрос."
+    with SessionLocal() as db:
+        row = db.execute(
+            select(Question).where(
+                Question.profession == profession,
+                Question.question == question_text
+            )
+        ).scalar_one_or_none()
 
+    if not row:
+        return "❌ Не удалось найти ответ на этот вопрос."
+    return row.answer_html or row.answer_text or "❌ К сожалению, подробный ответ отсутствует."
