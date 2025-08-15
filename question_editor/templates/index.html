@@ -48,9 +48,25 @@
     questionEl.addEventListener("input", markChanged);
     answerEl.addEventListener("input", markChanged);
 
+    function getIdFromURL() {
+        // поддержим и /q/123, и ?id=123
+        const m = window.location.pathname.match(/^\/q\/(\d+)/);
+        if (m) return parseInt(m[1], 10);
+        const p = new URLSearchParams(window.location.search).get("id");
+        return p ? parseInt(p, 10) : null;
+    }
+
     async function load() {
         const res = await fetch("/api/questions");
         questions = await res.json();
+
+        // выбрать позицию по id из URL (если есть)
+        const idFromURL = getIdFromURL();
+        if (idFromURL) {
+            const i = questions.findIndex(q => q.id === idFromURL);
+            if (i !== -1) index = i;
+        }
+
         show();
     }
 
@@ -66,32 +82,59 @@
             questionEl.value = "Нет вопросов";
             answerEl.value = "";
             statusEl.textContent = "";
+            // Почистим URL, если вдруг /q/...
+            if (window.location.pathname.startsWith("/q/")) {
+                history.replaceState(null, "", "/");
+            }
             return;
         }
+
         index = Math.max(0, Math.min(index, questions.length - 1));
         const q = questions[index];
+
         questionEl.value = q.question || "";
         answerEl.value = q.answer || "";
+
+        // Обновляем URL на «красивый»
+        const newPath = `/q/${q.id}`;
+        if (window.location.pathname !== newPath) {
+            history.replaceState(null, "", newPath);
+        }
+
         isDirty = false;
         statusEl.textContent = "";
     }
 
     async function save() {
+        const q = questions[index];
         const form = new FormData();
-        form.append("index", index);
+        form.append("id", q.id);
         form.append("question", questionEl.value);
         form.append("answer", answerEl.value);
 
         await fetch("/api/update", { method: "POST", body: form });
+
+        // обновим локальный кэш
+        q.question = questionEl.value;
+        q.answer = answerEl.value;
+
         isDirty = false;
         statusEl.textContent = "✅ Сохранено";
     }
 
     async function del() {
+        if (!confirm("Удалить этот вопрос?")) return;
+
+        const q = questions[index];
         const form = new FormData();
-        form.append("index", index);
+        form.append("id", q.id);
+
         await fetch("/api/delete", { method: "POST", body: form });
-        await load();
+
+        // Удаляем из массива и показываем соседний
+        questions.splice(index, 1);
+        if (index >= questions.length) index = Math.max(0, questions.length - 1);
+        show();
     }
 
     function next() {
@@ -110,6 +153,7 @@
 
     load();
 </script>
+
 
 </body>
 
